@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToDoアプリ管理画面</title>
+    <title>ToDoアプリTop画面</title>
 </head>
 <body>
-    
+    ログイン画面です．登録したmidを入れます．
+    <form th:action="@{/todo/login}" method="post">
+        <p>
+            <input type="text" required name="mid" id="mid">
+        </p>
+        <p>
+            <input type="submit" value="ログインする">
+        </p>
+    </form>
 </body>
 </html>

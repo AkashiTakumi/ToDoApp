@@ -4,9 +4,34 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>自分のtodoリスト</title>
 </head>
 <body>
+    <p>[[*{name}]]さんのtodoリストを作成</p>
+    <h2>[[*{name}]]さんのtodoリスト</h2>
+    <h3>todo登録フォーム</h3>
+    <form th:action="@{/todo/{mid}/register(mid = ${mid})}" method="post" th:object="${ToDoForm}">
+        <input type="text" required th:field="*{title}">
+        <p><input type="submit" value="todo登録をする"></p>
+    </form>
     
+    <table border="1">
+        <tr th:each="todo: ${myToDos}">
+            <td>[[${todo.seq}]]</td>
+            <td>[[${todo.name}]]</td>
+            <td>[[${todo.mid}]]</td>
+            <td>[[${todo.createdAt}]]</td>
+        </tr>
+    </table>
+
+    <h2>[[*{name}]]さんのdoneリスト</h2>
+    <table border="1">
+        <tr th:each="done: ${myDones}">
+            <td>[[${done.seq}]]</td>
+            <td>[[${done.name}]]</td>
+            <td>[[${done.mid}]]</td>
+            <td>[[${done.createdAt}]]</td>
+        </tr>
+    </table>
 </body>
 </html>

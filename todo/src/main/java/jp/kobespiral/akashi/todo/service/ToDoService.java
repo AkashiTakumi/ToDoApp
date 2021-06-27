@@ -45,6 +45,20 @@ public class ToDoService {
     }
 
     /**
+     * doneとなった時にdoneAtを追加してリポジトリを更新するメソッド
+     * @param seq
+     * @return
+     */
+    public ToDo done(Long seq) {
+        ToDo t = getToDo(seq);
+        Date doneAt = new Date();
+        t.setDoneAt(doneAt);
+        t.setDone(true);
+
+        return todos.save(t);
+    }
+
+    /**
      * ある人のToDoリストを取得
      * @param mid
      * @return
