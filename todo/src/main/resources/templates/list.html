@@ -7,30 +7,54 @@
     <title>自分のtodoリスト</title>
 </head>
 <body>
-    <p>[[*{name}]]さんのtodoリストを作成</p>
-    <h2>[[*{name}]]さんのtodoリスト</h2>
+    <h2>[[*{name}]]さんのtodoリストへようこそ！</h2>
+    <input type="button" value="ログイン画面へ戻る" th:attr="onclick='location.href=\''+@{/}+'\''">
+    <h3>みんなのtodoリストはこちら</h3>
+    <form th:action="@{/todo/{mid}/all(mid = ${mid})}" method="post">
+        <input type="submit" value="みんなのtodoを見に行く">
+    </form>
     <h3>todo登録フォーム</h3>
     <form th:action="@{/todo/{mid}/register(mid = ${mid})}" method="post" th:object="${ToDoForm}">
+        todoのタイトルをここに入力：
         <input type="text" required th:field="*{title}">
         <p><input type="submit" value="todo登録をする"></p>
     </form>
-    
+
+    <h3>現在公開中のtodoリスト</h3>
     <table border="1">
+        <tr>
+            <td>todo番号</td>
+            <td>タイトル</td>
+            <td>作成者</td>
+            <td>作成日時</td>
+        </tr>
         <tr th:each="todo: ${myToDos}">
             <td>[[${todo.seq}]]</td>
-            <td>[[${todo.name}]]</td>
+            <td>[[${todo.title}]]</td>
             <td>[[${todo.mid}]]</td>
             <td>[[${todo.createdAt}]]</td>
+            <td>
+                <form th:action="@{/todo/{mid}/done(mid = ${mid})}" method="post">
+                    <input type="submit" value="done!">
+                    <input type="hidden" name="seq" th:value="${todo.seq}">
+                </form>
+            </td>
         </tr>
     </table>
 
-    <h2>[[*{name}]]さんのdoneリスト</h2>
+    <h3>[[*{name}]]さんのdoneリスト</h3>
     <table border="1">
+        <tr>
+            <td>todo番号</td>
+            <td>タイトル</td>
+            <td>作成者</td>
+            <td>終了日時</td>
+        </tr>
         <tr th:each="done: ${myDones}">
             <td>[[${done.seq}]]</td>
-            <td>[[${done.name}]]</td>
+            <td>[[${done.title}]]</td>
             <td>[[${done.mid}]]</td>
-            <td>[[${done.createdAt}]]</td>
+            <td>[[${done.doneAt}]]</td>
         </tr>
     </table>
 </body>

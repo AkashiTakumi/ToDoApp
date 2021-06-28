@@ -51,6 +51,8 @@ public class ToDoController {
         model.addAttribute("myToDos", myToDos);
         model.addAttribute("myDones", myDones);
 
+        model.addAttribute("ToDoForm", new ToDoForm());
+
         return "list";
     }
 
@@ -67,10 +69,6 @@ public class ToDoController {
         Member m = mService.getMember(mid);
         model.addAttribute("name", m.getName());
         model.addAttribute("mid", m.getMid());
-        //List<ToDo> myToDos = tService.getToDoList(mid);
-        //List<ToDo> myDones = tService.getDoneList(mid);
-        //model.addAttribute("myToDos", myToDos);
-        //model.addAttribute("myDones", myDones);
 
         return "redirect:/todo/" + mid;
     }
@@ -89,8 +87,21 @@ public class ToDoController {
         return "redirect:/todo/" + mid;
     }
 
+    @PostMapping("/{mid}/done")
+    public String done(@RequestParam Long seq, @PathVariable String mid){
+        tService.done(seq);
+
+        return "redirect:/todo/" + mid;
+    }
+
+    /**
+     * 全員のToDo，Doneリストを表示する
+     * @param model
+     * @return
+     */
     @PostMapping("/{mid}/all")
-    public String showAllList(Model model) {
+    public String showAllList(@PathVariable String mid, Model model) {
+        model.addAttribute("mid", mid);
         List<ToDo> allToDos = tService.getAllToDoList();
         List<ToDo> allDones = tService.getAllDoneList();
         model.addAttribute("allToDos", allToDos);

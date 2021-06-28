@@ -7,6 +7,40 @@
     <title>みんなのToDoリスト</title>
 </head>
 <body>
-    みんなのToDoが表示されます．
+    <h3>現在公開中のみんなのtodoリスト</h3>
+    <table border="1">
+        <tr>
+            <td>todo番号</td>
+            <td>タイトル</td>
+            <td>作成者</td>
+            <td>作成日時</td>
+        </tr>
+        <tr th:each="todo: ${allToDos}">
+            <td>[[${todo.seq}]]</td>
+            <td>[[${todo.title}]]</td>
+            <td>[[${todo.mid}]]</td>
+            <td>[[${todo.createdAt}]]</td>
+        </tr>
+    </table>
+
+    <h3>みんなのdoneリスト</h3>
+    <table border="1">
+        <tr>
+            <td>todo番号</td>
+            <td>タイトル</td>
+            <td>作成者</td>
+            <td>終了日時</td>
+        </tr>
+        <tr th:each="done: ${allDones}">
+            <td>[[${done.seq}]]</td>
+            <td>[[${done.title}]]</td>
+            <td>[[${done.mid}]]</td>
+            <td>[[${done.doneAt}]]</td>
+        </tr>
+    </table>
+
+    <form th:action="@{/todo/{mid}(mid = ${mid})}" method="get">
+        <input type="submit" value="自分のtodoへ戻る">
+    </form>
 </body>
 </html>
