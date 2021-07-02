@@ -4,6 +4,28 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <!-- bootstrap, <head>の中に以下のcss,jsを入れる -->
+    <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"
+  ></script>
     <title>自分のtodoリスト</title>
 </head>
 <body>
@@ -14,20 +36,22 @@
         <input type="submit" value="みんなのtodoを見に行く">
     </form>
     <h3>todo登録フォーム</h3>
-    <form th:action="@{/todo/{mid}/register(mid = ${mid})}" method="post" th:object="${ToDoForm}">
+    <form th:action="@{/todo/{mid}/register(mid = ${mid})}" method="post" th:object="${toDoForm}">
         todoのタイトルをここに入力：
         <input type="text" required th:field="*{title}">
         <p><input type="submit" value="todo登録をする"></p>
     </form>
 
     <h3>現在公開中のtodoリスト</h3>
-    <table border="1">
-        <tr>
-            <td>todo番号</td>
-            <td>タイトル</td>
-            <td>作成者</td>
-            <td>作成日時</td>
-        </tr>
+    <table border="1" class="table">
+        <thead class="thead-dark">
+            <tr>
+                <td>todo番号</td>
+                <td>タイトル</td>
+                <td>作成者</td>
+                <td>作成日時</td>
+            </tr>
+        </thead>
         <tr th:each="todo: ${myToDos}">
             <td>[[${todo.seq}]]</td>
             <td>[[${todo.title}]]</td>
@@ -43,7 +67,7 @@
     </table>
 
     <h3>[[*{name}]]さんのdoneリスト</h3>
-    <table border="1">
+    <table border="1" class="table">
         <tr>
             <td>todo番号</td>
             <td>タイトル</td>

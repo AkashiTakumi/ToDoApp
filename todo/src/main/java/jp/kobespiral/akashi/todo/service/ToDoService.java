@@ -59,6 +59,55 @@ public class ToDoService {
     }
 
     /**
+     * RESTAPI用
+     * midとseqを引数に取ってtodoを検索する
+     * @param mid
+     * @param seq
+     * @return
+     */
+    public ToDo done(String mid, Long seq) {
+        //ToDo t = todos.findByMidAndSeq(mid, seq);
+        ToDo t = getToDo(seq);
+        if (t.getMid().equals(mid)) {
+            t.setDone(true);
+            t.setDoneAt(new Date());
+            return todos.save(t);
+        } else {
+            throw new ToDoAppException(403, "You can't done this todo");
+        }
+    }
+
+    /**
+     * RESTAPI用
+     * todoの更新用メソッド
+     * midとseqで検索して，form内のタイトルで更新
+     * また，todoの作成日時も更新
+     * @param mid
+     * @param seq
+     * @param form
+     * @return
+     */
+    public ToDo updateToDo(String mid, Long seq, ToDoForm form){
+        ToDo t = getToDo(seq);
+        if (t.getMid().equals(mid)) {
+            t.setTitle(form.getTitle());
+            t.setCreatedAt(new Date());
+            return todos.save(t);
+        } else {
+            throw new ToDoAppException(403, "You can't update this todo");
+        }
+    }
+
+    public void deleteToDo(String mid, Long seq) {
+        ToDo t = getToDo(seq);
+        if (t.getMid().equals(mid)) {
+            todos.deleteById(seq);
+        } else {
+            throw new ToDoAppException(403, "You can't delete this todo");
+        }
+    }
+
+    /**
      * ある人のToDoリストを取得
      * @param mid
      * @return
