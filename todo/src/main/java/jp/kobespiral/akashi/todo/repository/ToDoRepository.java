@@ -20,4 +20,6 @@ public interface ToDoRepository extends CrudRepository<ToDo, Long>{
 
     //midとToDoで検索
     public List<ToDo> findByMidAndDoneFalse(String mid);
+
+    public ToDo findByMidAndSeq(String mid, Long seq);
 }
