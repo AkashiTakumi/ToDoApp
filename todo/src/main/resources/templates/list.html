@@ -29,57 +29,79 @@
     <title>自分のtodoリスト</title>
 </head>
 <body>
-    <h2>[[*{name}]]さんのtodoリストへようこそ！</h2>
-    <input type="button" value="ログイン画面へ戻る" th:attr="onclick='location.href=\''+@{/}+'\''">
-    <h3>みんなのtodoリストはこちら</h3>
-    <form th:action="@{/todo/{mid}/all(mid = ${mid})}" method="post">
-        <input type="submit" value="みんなのtodoを見に行く">
-    </form>
-    <h3>todo登録フォーム</h3>
-    <form th:action="@{/todo/{mid}/register(mid = ${mid})}" method="post" th:object="${toDoForm}">
-        todoのタイトルをここに入力：
-        <input type="text" required th:field="*{title}">
-        <p><input type="submit" value="todo登録をする"></p>
-    </form>
+    <div class="ml-3 mt-2">
+        <h2>[[*{name}]]さんのtodoリストへようこそ！</h2>
+        <input type="button" value="ログイン画面へ戻る" th:attr="onclick='location.href=\''+@{/}+'\''" class="btn btn-danger">
+    </div>
 
-    <h3>現在公開中のtodoリスト</h3>
-    <table border="1" class="table">
-        <thead class="thead-dark">
-            <tr>
-                <td>todo番号</td>
-                <td>タイトル</td>
-                <td>作成者</td>
-                <td>作成日時</td>
-            </tr>
-        </thead>
-        <tr th:each="todo: ${myToDos}">
-            <td>[[${todo.seq}]]</td>
-            <td>[[${todo.title}]]</td>
-            <td>[[${todo.mid}]]</td>
-            <td>[[${todo.createdAt}]]</td>
-            <td>
-                <form th:action="@{/todo/{mid}/done(mid = ${mid})}" method="post">
-                    <input type="submit" value="done!">
-                    <input type="hidden" name="seq" th:value="${todo.seq}">
-                </form>
-            </td>
-        </tr>
-    </table>
+    <div class="ml-3 mt-3">
+        <h3>みんなのtodoリストはこちら</h3>
+        <form th:action="@{/todo/{mid}/all(mid = ${mid})}" method="post">
+            <input type="submit" value="みんなのtodoを見に行く" class="btn btn-primary">
+        </form>
+    </div>
 
-    <h3>[[*{name}]]さんのdoneリスト</h3>
-    <table border="1" class="table">
-        <tr>
-            <td>todo番号</td>
-            <td>タイトル</td>
-            <td>作成者</td>
-            <td>終了日時</td>
-        </tr>
-        <tr th:each="done: ${myDones}">
-            <td>[[${done.seq}]]</td>
-            <td>[[${done.title}]]</td>
-            <td>[[${done.mid}]]</td>
-            <td>[[${done.doneAt}]]</td>
-        </tr>
-    </table>
+    <div class="ml-3 mt-3">
+        <h3>todo登録フォーム</h3>
+        <div class="form-group col-xl-6 col-sm-12">
+            <form th:action="@{/todo/{mid}/register(mid = ${mid})}" method="post" th:object="${toDoForm}">
+                todoのタイトルをここに入力：
+                <input type="text" required th:field="*{title}" class="form-control">
+                <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color: red"></span>
+                <p><input type="submit" value="todo登録をする" class="btn btn-primary"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="ml-3 mt-3 col-xl-10 col-sm-12">
+        <h3>現在公開中のtodoリスト</h3>
+        <table border="1" class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <td>todo番号</td>
+                    <td>タイトル</td>
+                    <td>作成者</td>
+                    <td>作成日時</td>
+                    <td>doneコマンド</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="todo: ${myToDos}">
+                    <td>[[${todo.seq}]]</td>
+                    <td>[[${todo.title}]]</td>
+                    <td>[[${todo.mid}]]</td>
+                    <td>[[${todo.createdAt}]]</td>
+                    <td>
+                        <form th:action="@{/todo/{mid}/done(mid = ${mid})}" method="post">
+                            <input type="submit" value="done!" class="btn btn-success">
+                            <input type="hidden" name="seq" th:value="${todo.seq}">
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>    
+    </div>
+
+    <div class="ml-3 mt-3 col-xl-10 col-sm-12">
+        <h3>[[*{name}]]さんのdoneリスト</h3>
+        <table border="1" class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <td>todo番号</td>
+                    <td>タイトル</td>
+                    <td>作成者</td>
+                    <td>終了日時</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="done: ${myDones}">
+                    <td>[[${done.seq}]]</td>
+                    <td>[[${done.title}]]</td>
+                    <td>[[${done.mid}]]</td>
+                    <td>[[${done.doneAt}]]</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
