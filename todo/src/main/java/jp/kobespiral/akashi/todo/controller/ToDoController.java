@@ -91,7 +91,10 @@ public class ToDoController {
      * @return
      */
     @PostMapping("/{mid}/register")
-    public String createToDo(@ModelAttribute("toDoForm") ToDoForm form, @PathVariable String mid, Model model) {
+    public String createToDo(@Validated @ModelAttribute("toDoForm") ToDoForm form, BindingResult bindingResult, @PathVariable String mid, Model model) {
+        if(bindingResult.hasErrors()){
+            return showList(mid, model);
+        }
         model.addAttribute("toDoForm", form);
         tService.createToDo(mid, form);
         return "redirect:/todo/" + mid;
