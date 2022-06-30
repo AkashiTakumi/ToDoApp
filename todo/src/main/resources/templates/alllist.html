@@ -1,63 +1,51 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 手書きcss, <head>の中に以下のcssを入れる -->
-    <link rel="stylesheet" th:href=@{/css/todo_css.css} />
-    <title>みんなのToDoリスト</title>
-    <!-- bootstrap, <head>の中に以下のcss,jsを入れる -->
+    <title>ToDoList</title>
 </head>
+
 <body>
-    <h2>こちらはみんなのtodoリストです</h2>
-
-    <div>
-        <h3>現在公開中のみんなのtodoリスト</h3>
-        <table>
-            <thead>
-                <tr>
-                    <td>todo番号</td>
-                    <td>タイトル</td>
-                    <td>作成者</td>
-                    <td>作成日時</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="todo: ${allToDos}">
-                    <td>[[${todo.seq}]]</td>
-                    <td>[[${todo.title}]]</td>
-                    <td>[[${todo.mid}]]</td>
-                    <td>[[${todo.createdAt}]]</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div>
-        <h3>みんなのdoneリスト</h3>
-        <table>
-            <thead>
-                <tr>
-                    <td>todo番号</td>
-                    <td>タイトル</td>
-                    <td>作成者</td>
-                    <td>終了日時</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="done: ${allDones}">
-                    <td>[[${done.seq}]]</td>
-                    <td>[[${done.title}]]</td>
-                    <td>[[${done.mid}]]</td>
-                    <td>[[${done.doneAt}]]</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <form th:action="@{/todo/{mid}(mid = ${mid})}" method="get">
-        <input type="submit" value="自分のtodoへ戻る">
+    <h1> みんなのToDoリスト</h1>
+    <p>
+        <a th:href="@{/{mid}/todos(mid=${member.mid})}">自分のToDo</a>
+    <form th:action="@{/sign_out}" method="post">
+        <input type="submit" value="サインアウト" />
     </form>
+    </p>
+    <h2>ToDo</h2>
+    <table border="1">
+        <tr>
+            <th>#</th>
+            <th>タイトル</th>
+            <th>作成者</th>
+            <th>作成日時</th>
+        </tr>
+        <tr th:each="todo: ${todos}">
+            <td>[[${todo.seq}]]</td>
+            <td>[[${todo.title}]]</td>
+            <td>[[${todo.mid}]]</td>
+            <td>[[${todo.createdAt}]]</td>
+        </tr>
+    </table>
+
+    <h2>Done</h2>
+    <table border="1">
+        <tr>
+            <th>#</th>
+            <th>タイトル</th>
+            <th>作成者</th>
+            <th>完了日時</th>
+        </tr>
+        <tr th:each="done: ${dones}">
+            <td>[[${done.seq}]]</td>
+            <td>[[${done.title}]]</td>
+            <td>[[${done.mid}]]</td>
+            <td>[[${done.doneAt}]]</td>
+        </tr>
+    </table>
+
 </body>
+
 </html>

@@ -1,6 +1,7 @@
 package jp.kobespiral.akashi.todo.dto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,4 +13,7 @@ import lombok.NoArgsConstructor;
 public class LoginForm {
     @NotBlank
     String mid;
+    @NotBlank
+    @Size(min = 8)
+    String password;
 }

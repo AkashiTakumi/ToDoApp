@@ -1,8 +1,11 @@
 package jp.kobespiral.akashi.todo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,18 +14,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.kobespiral.akashi.todo.dto.LoginForm;
 import jp.kobespiral.akashi.todo.dto.ToDoForm;
 import jp.kobespiral.akashi.todo.entity.Member;
 import jp.kobespiral.akashi.todo.entity.ToDo;
+import jp.kobespiral.akashi.todo.exception.ToDoAppException;
 import jp.kobespiral.akashi.todo.service.MemberService;
 import jp.kobespiral.akashi.todo.service.ToDoService;
+import jp.kobespiral.akashi.todo.dto.UserDetailsImpl;
 
 @Controller
-@RequestMapping("/todo")
 public class ToDoController {
     @Autowired
     MemberService mService;
@@ -30,102 +33,100 @@ public class ToDoController {
     ToDoService tService;
 
     /**
-     * ログイン画面の表示
-     * @return
+     * トップページ
      */
-    @GetMapping("/")
-    public String showIndex(@ModelAttribute(name = "loginForm") LoginForm form, Model model) {
-        System.out.println("aaaaaaaaaaaaaaaaaaaaa");
-        model.addAttribute("loginForm", new LoginForm());
-        return "index";
+    @GetMapping("/sign_in")
+    String showIndex(@RequestParam Map<String, String> params, @ModelAttribute LoginForm form, Model model) {
+        // パラメータ処理．ログアウト時は?logout, 認証失敗時は?errorが帰ってくる（WebSecurityConfig.java参照）
+        if (params.containsKey("sign_out")) {
+            model.addAttribute("message", "サインアウトしました");
+        } else if (params.containsKey("error")) {
+            model.addAttribute("message", "サインインに失敗しました");
+        }
+        model.addAttribute("loginForm", form);
+        return "signin";
     }
 
     /**
-     * 特定のmidを持つ人のToDo等をmodelにセットする
-     * @param mid
-     * @param model
-     * @return
+     * ログイン処理．midの存在確認をして，ユーザページにリダイレクト
      */
-    @GetMapping("/{mid}")
-    public String showList(@PathVariable String mid, Model model) {
+    @GetMapping("/sign_in_success")
+    String login() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Member m = ((UserDetailsImpl) auth.getPrincipal()).getMember();
+        if (m.getRole().equals("ADMIN")) {
+            return "redirect:/admin/register";
+        }
+        return "redirect:/" + m.getMid() + "/todos";
+    }
+
+    /**
+     * ユーザのToDoリストのページ
+     */
+    @GetMapping("/{mid}/todos")
+    String showToDoList(@PathVariable String mid, @ModelAttribute(name = "ToDoForm") ToDoForm form, Model model) {
+        checkIdentity(mid);
+
         Member m = mService.getMember(mid);
-        model.addAttribute("name", m.getName());
-        model.addAttribute("mid", m.getMid());
-        List<ToDo> myToDos = tService.getToDoList(mid);
-        List<ToDo> myDones = tService.getDoneList(mid);
-        model.addAttribute("myToDos", myToDos);
-        model.addAttribute("myDones", myDones);
-
-        model.addAttribute("toDoForm", new ToDoForm());
-
+        model.addAttribute("member", m);
+        model.addAttribute("ToDoForm", form);
+        List<ToDo> todos = tService.getToDoList(mid);
+        model.addAttribute("todos", todos);
+        List<ToDo> dones = tService.getDoneList(mid);
+        model.addAttribute("dones", dones);
         return "list";
     }
 
     /**
-     * ログイン時に呼ばれるメソッド
-     * midとそれに対応する名前をmodelに入れてlist.htmlを返す
-     * listで表示させる自分のtodoとdoneをmodelに格納する
-     * @param mid
-     * @param model
-     * @return
+     * 全員のToDoリストのページ
      */
-    @PostMapping("/login")
-    public String login(@Validated @ModelAttribute(name = "loginForm") LoginForm form, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            return showIndex(form, model);
-        }
-        model.addAttribute("loginForm", form);
-        String mid = form.getMid();
-        //mService.getMember(mid);
-        //model.addAttribute("name", m.getName());
-        //model.addAttribute("mid", m.getMid());
-
-        return "redirect:/todo/" + mid;
-    }
-    
-    /**
-     * todoの登録を行う
-     * @param form
-     * @param mid
-     * @param model
-     * @return
-     */
-    @PostMapping("/{mid}/register")
-    public String createToDo(@Validated @ModelAttribute("toDoForm") ToDoForm form, BindingResult bindingResult, @PathVariable String mid, Model model) {
-        if(bindingResult.hasErrors()){
-            return showList(mid, model);
-        }
-        model.addAttribute("toDoForm", form);
-        tService.createToDo(mid, form);
-        return "redirect:/todo/" + mid;
-    }
-
-    /**
-     * todoをdoneにする
-     * @param seq
-     * @param mid
-     * @return
-     */
-    @PostMapping("/{mid}/done")
-    public String done(@RequestParam Long seq, @PathVariable String mid){
-        tService.done(seq);
-
-        return "redirect:/todo/" + mid;
-    }
-
-    /**
-     * 全員のToDo，Doneリストを表示する
-     * @param model
-     * @return
-     */
-    @PostMapping("/{mid}/all")
-    public String showAllList(@PathVariable String mid, Model model) {
-        model.addAttribute("mid", mid);
-        List<ToDo> allToDos = tService.getAllToDoList();
-        List<ToDo> allDones = tService.getAllDoneList();
-        model.addAttribute("allToDos", allToDos);
-        model.addAttribute("allDones", allDones);
-
+    @GetMapping("/{mid}/todos/all")
+    String showAllToDoList(@PathVariable String mid, Model model) {
+        checkIdentity(mid);
+        Member m = mService.getMember(mid);
+        model.addAttribute("member", m);
+        List<ToDo> todos = tService.getToDoList(mid);
+        model.addAttribute("todos", todos);
+        List<ToDo> dones = tService.getDoneList(mid);
+        model.addAttribute("dones", dones);
         return "alllist";
     }
+
+    /**
+     * ToDoの作成．作成処理後，ユーザページへリダイレクト
+     */
+    @PostMapping("/{mid}/todos")
+    String createToDo(@PathVariable String mid, @Validated @ModelAttribute(name = "ToDoForm") ToDoForm form,
+            BindingResult bindingResult, Model model) {
+        checkIdentity(mid);
+
+        if (bindingResult.hasErrors()) {
+            return showToDoList(mid, form, model);
+        }
+        tService.createToDo(mid, form);
+        return "redirect:/" + mid + "/todos";
+    }
+
+    /**
+     * ToDoの完了．完了処理後，ユーザページへリダイレクト
+     */
+    @GetMapping("/{mid}/todos/{seq}/done")
+    String doneToDo(@PathVariable String mid, @PathVariable Long seq, Model model) {
+        checkIdentity(mid);
+        tService.done(mid, seq);
+        return "redirect:/" + mid + "/todos";
+    }
+
+    /**
+     * 認可チェック．与えられたmidがログイン中のmidに等しいかチェックする
+     */
+    private void checkIdentity(String mid) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Member m = ((UserDetailsImpl) auth.getPrincipal()).getMember();
+        if (!mid.equals(m.getMid())) {
+            throw new ToDoAppException(ToDoAppException.INVALID_TODO_OPERATION,
+                    m.getMid() + ": not authorized to access resources of " + mid);
+        }
+    }
+
 }
