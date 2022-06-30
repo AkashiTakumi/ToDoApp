@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Member {
     @Id
-    String mid;
-
-    String name;
+    String mid; // メンバーID
+    String name; // 名前
+    String password; // パスワード（暗号化済）
+    String role; // ロール
 }
