@@ -53,6 +53,12 @@
             <td><a th:href=@{/admin/delete/{m}(m=${m.mid})}>削除</a></td>
         </tr>
     </table>
+
+    <p>
+    <form th:action="@{/sign_out}" method="post">
+        <input type="submit" value="サインアウト" />
+    </form>
+    </p>
 </body>
 
 </html>
